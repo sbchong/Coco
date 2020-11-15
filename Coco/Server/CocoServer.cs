@@ -37,16 +37,14 @@ namespace Coco.Server
                     if (tmpTcpClient.Connected)
                     {
                         HandleClient handleClient = new HandleClient(tmpTcpClient, this);
-                        Thread myThread = new Thread(new ThreadStart(handleClient.Communicate));
-                        myThread.IsBackground = true;
+                        Thread myThread = new Thread(new ThreadStart(handleClient.Communicate))
+                            {IsBackground = true, Name = tmpTcpClient.Client.RemoteEndPoint.ToString()};
                         myThread.Start();
-                        myThread.Name = tmpTcpClient.Client.RemoteEndPoint.ToString();
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    Console.Read();
+                    
                 }
             } // end while
         } // end ListenToConnect()

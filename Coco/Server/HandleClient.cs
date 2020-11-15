@@ -60,6 +60,7 @@ namespace Coco.Server
                     {
                         _server.Push(channelName, msg);
                     }
+
                     //Thread.Sleep(15000);
                     SendCompeleted();
                 }
@@ -71,6 +72,10 @@ namespace Coco.Server
                 }
             }
             catch
+            {
+                this._client.Close();
+            }
+            finally
             {
                 this._client.Close();
             }
