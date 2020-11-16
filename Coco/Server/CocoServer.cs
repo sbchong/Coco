@@ -42,10 +42,7 @@ namespace Coco.Server
                         myThread.Start();
                     }
                 }
-                catch (Exception ex)
-                {
-                    tmpTcpClient.Close();
-                }
+                catch (Exception ex) { }
             } // end while
         } // end ListenToConnect()
 
