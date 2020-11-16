@@ -44,7 +44,7 @@ namespace Coco.Server
                 }
                 catch (Exception ex)
                 {
-
+                    tmpTcpClient.Close();
                 }
             } // end while
         } // end ListenToConnect()
