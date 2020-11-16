@@ -38,13 +38,13 @@ namespace Coco.Server
                     {
                         HandleClient handleClient = new HandleClient(tmpTcpClient, this);
                         Thread myThread = new Thread(new ThreadStart(handleClient.Communicate))
-                            {IsBackground = true, Name = tmpTcpClient.Client.RemoteEndPoint.ToString()};
+                        { IsBackground = true, Name = tmpTcpClient.Client.RemoteEndPoint.ToString() };
                         myThread.Start();
                     }
                 }
                 catch (Exception ex)
                 {
-                    
+
                 }
             } // end while
         } // end ListenToConnect()
