@@ -68,9 +68,7 @@ namespace Coco.Server
         public string Pop(string channelName)
         {
             var topic = Topics.FirstOrDefault(x => x.Name == channelName);
-            if (topic is null)
-                return null;
-            var msg = topic.Messages.FirstOrDefault();
+            var msg = topic?.Messages.FirstOrDefault();
             if (msg is null) { return null; }
             topic.Messages.Remove(msg);
             return msg.Body;
