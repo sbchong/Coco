@@ -5,9 +5,15 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Description>Coco是一个简单的消息队列</Description>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <SignAssembly>false</SignAssembly>
+    <Version>0.0.0.1</Version>
+    <PackageProjectUrl>https://github.com/sbchong/Coco</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sbchong/Coco.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Server\Interfaces\" />
     <Folder Include="新文件夹\" />
   </ItemGroup>
 
