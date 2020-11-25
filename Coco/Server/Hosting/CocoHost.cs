@@ -7,25 +7,26 @@ using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
-
-namespace Coco.Server
+namespace Coco.Server.Hosting
 {
-    public class CocoServer
+    public class CocoHost : ICocoHost
     {
-        private List<HandleClient> clients;
         public static List<MessageTopic> Topics { get; set; } = new List<MessageTopic>();
 
         public static List<MessageTopic> AckTopics { get; set; } = new List<MessageTopic>();
+        public IServiceProvider Services { get; set; }
 
-        public void Start()
+        public void Run()
         {
             IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 9527);
 
             TcpListener tcpListener = new TcpListener(ipe);
 
             tcpListener.Start();
-            Console.WriteLine("coco start success!!! \n");
+            Console.WriteLine("coco start success!!!");
+            Console.WriteLine("coco is listening {0}:{1}", ipe.Address.ToString() == "0.0.0.0" ? "[::]" : ipe.Address.ToString(), ipe.Port);
 
             TcpClient tmpTcpClient;
             while (true)
@@ -37,12 +38,10 @@ namespace Coco.Server
                     if (tmpTcpClient.Connected)
                     {
                         HandleClient handleClient = new HandleClient(tmpTcpClient, this);
-                        Thread myThread = new Thread(new ThreadStart(handleClient.Communicate))
-                        { IsBackground = true, Name = tmpTcpClient.Client.RemoteEndPoint.ToString() };
-                        myThread.Start();
+                        new Thread(handleClient.Communicate) { IsBackground = true }.Start();                  
                     }
                 }
-                catch (Exception ex) { }
+                catch (Exception ex) { Console.WriteLine(ex.Message); }
             } // end while
         } // end ListenToConnect()
 
@@ -72,6 +71,16 @@ namespace Coco.Server
             if (msg is null) { return null; }
             topic.Messages.Remove(msg);
             return msg.Body;
+        }
+
+        public Task StartAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

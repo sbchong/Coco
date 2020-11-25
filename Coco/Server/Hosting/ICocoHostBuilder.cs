@@ -4,8 +4,11 @@ using System.Text;
 
 namespace Coco.Server.Hosting
 {
-    public class ICocoHostBuilder
+    public interface ICocoHostBuilder
     {
+        int Id { get; set; }
 
+        ICocoHost Build();
+        ICocoHostBuilder ConfigureCocoHostDefaults(Action<ICocoHostBuilder> configureDelegate);
     }
 }

@@ -6,6 +6,7 @@ namespace Coco.Server.Hosting
 {
     public static class Host
     {
+        private static ICocoHostBuilder cocoHostBuilder = null;
 
         public static ICocoHostBuilder CreateDefaultBuilder()
         {
@@ -14,7 +15,8 @@ namespace Coco.Server.Hosting
 
         public static ICocoHostBuilder CreateDefaultBuilder(string[] args)
         {
-            throw null;
+            cocoHostBuilder = new CocoHostBuilder();
+            return cocoHostBuilder;
         }
     }
 }

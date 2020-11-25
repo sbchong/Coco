@@ -4,8 +4,10 @@ using System.Text;
 
 namespace Coco.Server
 {
-    public class CommunicationBase
+    public class CommunicationBase:IDisposable
     {
+        private bool disposed;
+
         /// <summary>
         /// 傳送訊息
         /// </summary>
@@ -43,6 +45,56 @@ namespace Coco.Server
                 while (ns.DataAvailable);
             }
             return receiveMsg;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            //通知垃圾回收机制不再调用终结器（析构器）
+            GC.SuppressFinalize(this);
+        }
+        public void Close()
+        {
+            Dispose();
+        }
+
+        ///<summary>
+        /// 必须，以备程序员忘记了显式调用Dispose方法
+        ///</summary>
+        ~CommunicationBase()
+        {
+            //必须为false
+            Dispose(false);
+        }
+
+        ///<summary>
+        /// 非密封类修饰用protected virtual
+        /// 密封类修饰用private
+        ///</summary>
+        ///<param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+            {
+                return;
+            }
+            if (disposing)
+            {
+                // 清理托管资源
+                //if (_client != null)
+                //{
+                //    _client.Dispose();
+                //    _client = null;
+                //}
+            }
+            //// 清理非托管资源
+            //if (nativeResource != IntPtr.Zero)
+            //{
+            //    Marshal.FreeHGlobal(nativeResource);
+            //    nativeResource = IntPtr.Zero;
+            //}
+            //让类型知道自己已经被释放
+            disposed = true;
         }
     }
 
