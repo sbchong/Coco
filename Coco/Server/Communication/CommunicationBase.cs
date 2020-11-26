@@ -2,16 +2,16 @@
 using System.Net.Sockets;
 using System.Text;
 
-namespace Coco.Server
+namespace Coco.Server.Communication
 {
     public class CommunicationBase:IDisposable
     {
         private bool disposed;
 
         /// <summary>
-        /// 傳送訊息
+        /// 发消息
         /// </summary>
-        /// <param name="msg">要傳送的訊息</param>
+        /// <param name="msg">消息</param>
         /// <param name="tmpTcpClient">TcpClient</param>
         public void SendMsg(string msg, TcpClient tmpTcpClient)
         {
@@ -24,10 +24,10 @@ namespace Coco.Server
         }
 
         /// <summary>
-        /// 接收訊息
+        /// 接收消息
         /// </summary>
         /// <param name="tmpTcpClient">TcpClient</param>
-        /// <returns>接收到的訊息</returns>
+        /// <returns>消息</returns>
         public string ReceiveMsg(TcpClient tmpTcpClient)
         {
             string receiveMsg = string.Empty;
@@ -40,7 +40,7 @@ namespace Coco.Server
                 do
                 {
                     numberOfBytesRead = ns.Read(receiveBytes, 0, tmpTcpClient.ReceiveBufferSize);
-                    receiveMsg = Encoding.UTF8.GetString(receiveBytes, 0, numberOfBytesRead);
+                    receiveMsg += Encoding.UTF8.GetString(receiveBytes, 0, numberOfBytesRead);
                 }
                 while (ns.DataAvailable);
             }
@@ -59,7 +59,7 @@ namespace Coco.Server
         }
 
         ///<summary>
-        /// 必须，以备程序员忘记了显式调用Dispose方法
+        /// 必须，以备忘记了显式调用Dispose方法
         ///</summary>
         ~CommunicationBase()
         {
