@@ -18,7 +18,7 @@ namespace Coco.Server.Communication
 
         private bool disposed = false;
 
-        CommunicationBase cb = new CommunicationBase();
+        CommunicationBase cb;
 
         public event Action<Guid> CommunicateEnd;
 
@@ -31,22 +31,8 @@ namespace Coco.Server.Communication
             _client = client;
             _server = server;
             Id = id;
-
-
-            //Thread th = new Thread(new ThreadStart(UpadateMag));
-            //th.IsBackground = true;
-            // th.Start();
+            cb = new CommunicationBase();
         }
-
-        //public void UpadateMag()
-        //{
-        //    while (true)
-        //    {
-        //        Msg = _server.Pop(topicName);
-        //        if (!string.IsNullOrEmpty(Msg))
-        //            MsgRecived?.Invoke(this, Msg);
-        //    }
-        //}
 
         public void Communicate()
         {
@@ -76,7 +62,6 @@ namespace Coco.Server.Communication
                 {
                     if (SendMessage(topicName))
                     {
-                        //this._client.Close();
                         CommunicateEnd?.Invoke(this.Id);
                     }
                     else
@@ -84,8 +69,6 @@ namespace Coco.Server.Communication
                         var time = DateTime.Now.AddSeconds(15);
                         while (DateTime.Now<time) { }
                         SendCompeleted();
-                        //SendMessage(topicName);
-                        //this._server.CommunicateEnd(this.Id);
                         CommunicateEnd?.Invoke(this.Id);
                     }
                 }
@@ -112,22 +95,18 @@ namespace Coco.Server.Communication
                 return true;
             }
             else
-            {
                 return false;
-            }
         }
 
         public void SendNewMessage(string msg)
         {
-            if (this._client is null)
+            if (_client is null)
             {
                 CommunicateEnd?.Invoke(this.Id);
                 return;
             }
-            //Flag = true;
             cb.SendMsg(msg, this._client);
-            //cb.Close();
-            //this._server.CommunicateEnd(this.Id);
+            cb.Close();
             CommunicateEnd?.Invoke(this.Id);
         }
 

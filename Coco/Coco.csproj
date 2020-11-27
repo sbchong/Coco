@@ -10,6 +10,13 @@
     <PackageProjectUrl>https://github.com/sbchong/Coco</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sbchong/Coco.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <StartupObject></StartupObject>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
   <ItemGroup>

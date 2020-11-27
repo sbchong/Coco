@@ -15,6 +15,7 @@ namespace Coco.Server.Hosting
 
         public static ICocoHostBuilder CreateDefaultBuilder(string[] args)
         {
+            Console.WriteLine(string.Join(",", args));
             cocoHostBuilder = new CocoHostBuilder();
             return cocoHostBuilder;
         }
