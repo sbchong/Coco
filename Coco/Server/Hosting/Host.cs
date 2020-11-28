@@ -10,13 +10,14 @@ namespace Coco.Server.Hosting
 
         public static ICocoHostBuilder CreateDefaultBuilder()
         {
-            throw null;
+            if (cocoHostBuilder == null) cocoHostBuilder = new CocoHostBuilder();
+            return cocoHostBuilder;
         }
 
         public static ICocoHostBuilder CreateDefaultBuilder(string[] args)
         {
-            Console.WriteLine(string.Join(",", args));
-            cocoHostBuilder = new CocoHostBuilder();
+            if (cocoHostBuilder == null)
+                cocoHostBuilder = new CocoHostBuilder(args);
             return cocoHostBuilder;
         }
     }

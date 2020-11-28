@@ -4,9 +4,10 @@ using System.Text;
 
 namespace Coco.Server.Hosting.Values
 {
-    public enum MessagePersistenceType
+    public static class MessagePersistenceType
     {
-        Database = 0,
-        File = 1
+        public static string None { get; } = "none";
+        public static string LocalFile { get; } = "file";
+        public static string DataBase { get; } = "database";
     }
 }

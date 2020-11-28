@@ -12,28 +12,43 @@ namespace Coco.Server.Hosting
 {
     public class CocoHost : ICocoHost
     {
-        public  List<MessageTopic> Topics { get; set; }
+        public string Host { get ; set ; }
+        public string Port { get ; set ; }
+        public List<MessageTopic> Topics { get; set; }
+        public List<MessageTopic> AckTopics { get ; set ; }
+        public IServiceProvider Services { get ; set ; }
+        public List<HandleClient> HandleClients { get ; set ; }
+        public string Persistence { get; set; }
 
-        public  List<MessageTopic> AckTopics { get; set; } = new List<MessageTopic>();
-
-        public IServiceProvider Services { get; set; }
-
-        public List<HandleClient> HandleClients { get; set; }
-
-       
+        public void WriteLogo()
+        {
+            Console.WriteLine(@"    __ __ __ __              __ __ __ __              __ __ __ __               __ __ __ __    ");
+            Console.WriteLine(@"  /    __ __    \          /    __ __    \          /    __ __    \           /    __ __    \  ");
+            Console.WriteLine(@" /   /       \   \        /   /       \   \        /   /       \   \         /   /       \   \ ");
+            Console.WriteLine(@"|   |         | _ |      |   |         |   |      |   |         | _ |       |   |         |   |");
+            Console.WriteLine(@"|   |                    |   |         |   |      |   |                     |   |         |   |");
+            Console.WriteLine(@"|   |           _        |   |         |   |      |   |           _         |   |         |   |");
+            Console.WriteLine(@"|   |         |   |      |   |         |   |      |   |         |   |       |   |         |   |");
+            Console.WriteLine(@" \   \ __ __ /   /        \   \ __ __ /   /        \   \ __ __ /   /         \   \ __ __ /   /");
+            Console.WriteLine(@"  \ __ __ __ __ /          \ __ __ __ __ /          \ __ __ __ __ /           \ __ __ __ __ / ");
+            Console.WriteLine();
+        }
 
         public void Run()
         {
             Topics = new List<MessageTopic>();
+            AckTopics = new List<MessageTopic>();
             HandleClients = new List<HandleClient>();
-
-            IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 9527);
+            IPAddress iPAddress = IPAddress.Parse(Host ?? "0.0.0.0");
+            int port = Convert.ToInt32(Port ?? "9527");
+            IPEndPoint ipe = new IPEndPoint(iPAddress, port);
 
             TcpListener tcpListener = new TcpListener(ipe);
 
             tcpListener.Start();
             Console.WriteLine("coco start success!!!");
             Console.WriteLine("coco is listening {0}:{1}", ipe.Address.ToString() == "0.0.0.0" ? "[::]" : ipe.Address.ToString(), ipe.Port);
+            WriteLogo();
 
             TcpClient tmpTcpClient;
             while (true)
@@ -45,7 +60,7 @@ namespace Coco.Server.Hosting
                     if (tmpTcpClient.Connected)
                     {
                         var clientId = Guid.NewGuid();
-                        HandleClient handleClient = new HandleClient(clientId,tmpTcpClient, this);
+                        HandleClient handleClient = new HandleClient(clientId, tmpTcpClient, this);
                         HandleClients.Add(handleClient);
 
                         handleClient.CommunicateEnd += CommunicateEnd;

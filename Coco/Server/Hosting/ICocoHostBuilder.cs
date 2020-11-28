@@ -10,5 +10,6 @@ namespace Coco.Server.Hosting
 
         ICocoHost Build();
         ICocoHostBuilder ConfigureCocoHostDefaults(Action<ICocoHostBuilder> configureDelegate);
+        void UseUrl(string url);
     }
 }

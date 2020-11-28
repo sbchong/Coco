@@ -11,7 +11,7 @@ namespace Coco
             Host.CreateDefaultBuilder(args)
                 .ConfigureCocoHostDefaults(cocoBuilder =>
                 {
-                    cocoBuilder.Id = 10;
+                    //cocoBuilder.UseUrl("0.0.0.0:9522");
                 });
     }
 }
