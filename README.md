@@ -6,6 +6,7 @@ Coco 是一个开源，跨平台的消息队列服务，他非常简单并且轻
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/sbchong/Coco/.NET%20Core)
 ![GitHub](https://img.shields.io/github/license/sbchong/Coco)
+![GitHub all releases](https://img.shields.io/github/downloads/sbchong/Coco/total)
 
 - [x] **轻量简单，独立版体积不到50MB，运行时依赖版依赖于 .Net Core 3.1 ，体积小于1M**
 - [ ] 使用方便，支持json文件（低）和启动参数（高）配置
@@ -28,4 +29,4 @@ Coco.7z|运行时依赖跨平台通用版
 
 ### 项目依赖
 
-请在项目里分别安装[Coco.Producer]()和[Coco.Comsummer](https://github.com/sbchong/Coco.Comsumer)的NuGet程序包，根据其reandme指导使用
+请在项目里分别安装[Coco.Producer](https://github.com/sbchong/Coco.Producer)和[Coco.Comsummer](https://github.com/sbchong/Coco.Comsumer)的NuGet程序包，根据其reandme指导使用
