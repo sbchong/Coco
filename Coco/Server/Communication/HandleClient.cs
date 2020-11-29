@@ -67,7 +67,7 @@ namespace Coco.Server.Communication
                     else
                     {
                         var time = DateTime.Now.AddSeconds(15);
-                        while (DateTime.Now<time) { }
+                        Thread.Sleep(15000);
                         SendCompeleted();
                         CommunicateEnd?.Invoke(this.Id);
                     }
