@@ -1,5 +1,7 @@
-﻿using Coco.Server.Hosting.Values;
-using System;
+﻿using System;
+using System.Text.Json;
+using System.IO;
+using System.Text;
 
 namespace Coco.Server.Hosting
 {
@@ -7,7 +9,7 @@ namespace Coco.Server.Hosting
     {
         private ICocoHost cocoHost;
 
-        public int Id { get; set; } = 0;
+        public string ConfigurationFileName { get => "app.json"; }
 
         public CocoHostBuilder()
         {
@@ -17,6 +19,24 @@ namespace Coco.Server.Hosting
         public CocoHostBuilder(string[] args)
         {
             cocoHost = new CocoHost();
+
+            var filePath = Path.Combine(AppContext.BaseDirectory, ConfigurationFileName);
+            if (File.Exists(filePath))
+            {
+                var json = File.ReadAllText(filePath);
+
+                using (JsonDocument document = JsonDocument.Parse(json))
+                {
+                    if (document.RootElement.TryGetProperty(Encoding.UTF8.GetBytes("Host"), out var host))
+                        cocoHost.Host = host.GetString();
+                    if (document.RootElement.TryGetProperty(Encoding.UTF8.GetBytes("Port"), out var port))
+                        cocoHost.Port = port.GetString();
+                }
+            }
+
+
+
+
             if (args.Length <= 1 || args == null)
                 return;
             else

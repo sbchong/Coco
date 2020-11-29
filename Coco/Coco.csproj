@@ -23,4 +23,10 @@
     <Folder Include="新文件夹\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="app.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
