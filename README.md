@@ -15,7 +15,7 @@ Coco 是一个开源，跨平台的消息队列服务，他非常简单并且轻
 
 ## 使用方法
 
-### coco准备
+### 下载coco文件
 
 请前往发布页查看已发布文件，下载对应的版本，文件对应关系如下
 
@@ -27,6 +27,6 @@ Coco.7z|运行时依赖跨平台通用版
  
 **独立版直接运行即可，通用版必须保证系统有 .Net Core 3.1 Runtime 支持，使用 `dotnet` 命令启动**
 
-### 项目依赖
+### 项目安装对应包
 
 请在项目里分别安装[Coco.Producer](https://github.com/sbchong/Coco.Producer)和[Coco.Comsummer](https://github.com/sbchong/Coco.Comsumer)的NuGet程序包，根据其readme指导使用
