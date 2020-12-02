@@ -6,7 +6,7 @@
     <Description>Coco是一个简单的消息队列</Description>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
-    <Version>0.0.0.2</Version>
+    <Version>0.0.0.4</Version>
     <PackageProjectUrl>https://github.com/sbchong/Coco</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sbchong/Coco.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

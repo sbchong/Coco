@@ -40,7 +40,7 @@ namespace Coco.Server.Communication
             {
                 string content = cb.ReceiveMsg(this._client);
 
-                var part = content.Split('\\');
+                var part = content.Split("^^^");
 
                 var method = part[0];
                 topicName = part[1];
