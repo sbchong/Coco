@@ -47,6 +47,7 @@ namespace Coco.Server.Communication
 
                 ClientType = Convert.ToInt32(method);
 
+                //生产者发布消息后立即断开
                 if (ClientType == 0)
                 {
                     string msg = part[2];
@@ -58,6 +59,8 @@ namespace Coco.Server.Communication
                     this._client.Close();
                     CommunicateEnd?.Invoke(this.Id);
                 }
+
+                //只有消费者会被维护链接
                 else if (ClientType == 1)
                 {
                     if (SendMessage(topicName))

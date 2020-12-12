@@ -8,6 +8,6 @@ namespace Coco.Queue
     public class MessageTopic
     {
         public string Name { get; set; }
-        public List<Message> Messages { get; set; }
+        public List<string> Messages { get; set; }
     }
 }

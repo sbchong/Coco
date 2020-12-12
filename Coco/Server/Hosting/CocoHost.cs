@@ -74,28 +74,29 @@ namespace Coco.Server.Hosting
         }
 
         public void Push(string topicName, string msg)
-        { 
+        {
             var topic = Topics.FirstOrDefault(x => x.Name == topicName);
             if (topic is null)
             {
                 if (MsgReceived(topicName, msg))
                     return;
+
+                List<string> messages = new List<string>();
+                messages.Add(msg);
                 topic = new MessageTopic
                 {
                     Name = topicName,
-                    Messages = new List<Message> { new Message { Body = msg } }
+                    Messages = messages
                 };
 
                 Topics.Add(topic);
             }
             else
             {
-                topic.Messages.Add(new Message { Body = msg });
+                topic.Messages.Add(msg);
                 if (MsgReceived(topicName, string.Empty))
                     return;
             }
-
-
         }
 
         public string Pop(string topicName)
