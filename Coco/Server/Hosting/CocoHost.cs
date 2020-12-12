@@ -105,7 +105,7 @@ namespace Coco.Server.Hosting
             var msg = topic?.Messages.FirstOrDefault();
             if (msg is null) { return null; }
             topic.Messages.Remove(msg);
-            return msg.Body;
+            return msg;
         }
 
         public void CommunicateEnd(Guid clientId)
