@@ -2,6 +2,11 @@
 {
     public class Message
     {
-        public string Body { get; set; }
+        public Message(string body)
+        {
+            Body = body;
+        }
+        public string Body { get; }
+        public Message Next { get; }
     }
 }

@@ -14,7 +14,7 @@ namespace Coco.Server.Hosting
         public List<MessageTopic> Topics { get; set; }
         public List<MessageTopic> AckTopics { get; set; } 
         public IServiceProvider Services { get; set; }
-        public List<HandleClient> HandleClients { get; set; }
+        public List<HandleClient> SubcribeClients { get; set; }
         public string Persistence { get; set; }
         Task StartAsync(CancellationToken cancellationToken = default(CancellationToken));
         void Run();

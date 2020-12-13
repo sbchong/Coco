@@ -18,7 +18,7 @@ namespace Coco.Server.Hosting
         public List<MessageTopic> Topics { get; set; }
         public List<MessageTopic> AckTopics { get ; set ; }
         public IServiceProvider Services { get ; set ; }
-        public List<HandleClient> HandleClients { get ; set ; }
+        public List<HandleClient> SubcribeClients { get ; set ; }
         public string Persistence { get; set; }
 
         public void WriteLogo()
@@ -39,7 +39,7 @@ namespace Coco.Server.Hosting
         {
             Topics = new List<MessageTopic>();
             AckTopics = new List<MessageTopic>();
-            HandleClients = new List<HandleClient>();
+            SubcribeClients = new List<HandleClient>();
             IPAddress iPAddress = IPAddress.Parse(Host ?? "0.0.0.0");
             int port = Convert.ToInt32(Port ?? "9527");
             IPEndPoint ipe = new IPEndPoint(iPAddress, port);
@@ -62,7 +62,7 @@ namespace Coco.Server.Hosting
                     {
                         var clientId = Guid.NewGuid();
                         HandleClient handleClient = new HandleClient(clientId, tmpTcpClient, this);
-                        HandleClients.Add(handleClient);
+                        SubcribeClients.Add(handleClient);
 
                         handleClient.CommunicateEnd += CommunicateEnd;
 
@@ -111,19 +111,19 @@ namespace Coco.Server.Hosting
         public void CommunicateEnd(Guid clientId)
         {
             //Console.WriteLine(HandleClients.Count);
-            var client = HandleClients.FirstOrDefault(x => x.Id == clientId);
+            var client = SubcribeClients.FirstOrDefault(x => x.Id == clientId);
             if (client != null)
             {
-                HandleClients.Remove(client);
+                SubcribeClients.Remove(client);
                 client = null;
             }
         }
 
         public bool MsgReceived(string topicName, string msg)
         {
-            var client = HandleClients.FirstOrDefault(x => x.TopicName == topicName && x.ClientType == 1);
+            var client = SubcribeClients.FirstOrDefault(x => x.TopicName == topicName && x.ClientType == 1);
             if (client is null) return false;
-            if (client._client is null) { HandleClients.Remove(client); return false; }
+            if (client._client is null) { SubcribeClients.Remove(client); return false; }
             msg = Pop(topicName);
             client.SendNewMessage(msg);
             return true;
