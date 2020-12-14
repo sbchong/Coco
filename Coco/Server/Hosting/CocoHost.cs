@@ -21,6 +21,8 @@ namespace Coco.Server.Hosting
         public List<HandleClient> SubcribeClients { get ; set ; }
         public string Persistence { get; set; }
 
+        public List<Broker> Brokers { get; set; }
+
         public void WriteLogo()
         {
             Console.WriteLine(@"    __ __ __ __              __ __ __ __              __ __ __ __               __ __ __ __    ");
@@ -37,9 +39,21 @@ namespace Coco.Server.Hosting
 
         public void Run()
         {
+            Brokers = new List<Broker>();
+
+            var broker = new Broker();
+
+            broker.AddMessage("a");
+            broker.AddMessage("b");
+            broker.AddMessage("c");
+
+            string result = broker.ToString();
+
+
             Topics = new List<MessageTopic>();
             AckTopics = new List<MessageTopic>();
             SubcribeClients = new List<HandleClient>();
+
             IPAddress iPAddress = IPAddress.Parse(Host ?? "0.0.0.0");
             int port = Convert.ToInt32(Port ?? "9527");
             IPEndPoint ipe = new IPEndPoint(iPAddress, port);
@@ -73,27 +87,22 @@ namespace Coco.Server.Hosting
             }
         }
 
-        public void Push(string topicName, string msg)
+        public void Push(string topicName, string message)
         {
-            var topic = Topics.FirstOrDefault(x => x.Name == topicName);
-            if (topic is null)
+            var broker = Brokers.FirstOrDefault(x => x.TopicName == topicName);
+            if (broker is null)
             {
-                if (MsgReceived(topicName, msg))
+                if (MsgReceived(topicName, message))
                     return;
 
-                List<string> messages = new List<string>();
-                messages.Add(msg);
-                topic = new MessageTopic
-                {
-                    Name = topicName,
-                    Messages = messages
-                };
+                broker = new Broker() { TopicName=topicName};
 
-                Topics.Add(topic);
+                Message msg = new Message(message);
+
+                broker.Messages = msg;
             }
             else
             {
-                topic.Messages.Add(msg);
                 if (MsgReceived(topicName, string.Empty))
                     return;
             }
