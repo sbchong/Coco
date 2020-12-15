@@ -23,8 +23,10 @@ namespace Coco.Server.Hosting
 
         public List<Broker> Brokers { get; set; }
 
-        public void WriteLogo()
+        public void WriteStartInfo()
         {
+            Console.WriteLine("coco start success!!!");
+            Console.WriteLine("coco is listening {0}:{1}", Host, Port);
             Console.WriteLine(@"    __ __ __ __              __ __ __ __              __ __ __ __               __ __ __ __    ");
             Console.WriteLine(@"  /    __ __    \          /    __ __    \          /    __ __    \           /    __ __    \  ");
             Console.WriteLine(@" /   /       \   \        /   /       \   \        /   /       \   \         /   /       \   \ ");
@@ -61,16 +63,20 @@ namespace Coco.Server.Hosting
             TcpListener tcpListener = new TcpListener(ipe);
 
             tcpListener.Start();
-            Console.WriteLine("coco start success!!!");
-            Console.WriteLine("coco is listening {0}:{1}", ipe.Address.ToString() == "0.0.0.0" ? "[::]" : ipe.Address.ToString(), ipe.Port);
-            WriteLogo();
 
-            TcpClient tmpTcpClient;
+            WriteStartInfo();
+
+            Accept(tcpListener);
+        }
+
+        private void Accept(TcpListener tcpListener)
+        {
             while (true)
             {
                 try
                 {
-                    tmpTcpClient = tcpListener.AcceptTcpClient();
+
+                    TcpClient tmpTcpClient = tcpListener.AcceptTcpClient();
 
                     if (tmpTcpClient.Connected)
                     {
