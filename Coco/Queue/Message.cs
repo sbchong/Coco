@@ -2,11 +2,13 @@
 {
     public class Message
     {
-        public Message(string body)
+        public Message(string data)
         {
-            Body = body;
+            Data = data;
         }
-        public string Body { get; }
-        public Message Next { get; }
+
+        public string Data { get; set; }
+        public Message Previous { get; set; }
+        public Message Next { get; set; }
     }
 }
