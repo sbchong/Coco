@@ -101,7 +101,7 @@ namespace Coco.Server.Hosting
                 if (MsgReceived(topicName, message))
                     return;
 
-                broker = new Broker() { TopicName=topicName};
+                broker = new Broker(topicName);
 
                 Message msg = new Message(message);
 
@@ -115,6 +115,18 @@ namespace Coco.Server.Hosting
         }
 
         public string Pop(string topicName)
+        {
+            var broker = Brokers.FirstOrDefault(x => x.TopicName == topicName);
+            if (broker == null)
+            {
+                return null;
+            }
+            var msg = broker.GetMessage();
+            return msg;
+        }
+
+        [Obsolete]
+        public string Pop1(string topicName)
         {
             var topic = Topics.FirstOrDefault(x => x.Name == topicName);
             var msg = topic?.Messages.FirstOrDefault();
