@@ -1,5 +1,6 @@
 ﻿using Coco.Queue;
 using Coco.Server.Communication;
+using Coco.Server.Log;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +26,10 @@ namespace Coco.Server.Hosting
 
         public void WriteStartInfo()
         {
-            Console.WriteLine("coco start success!!!");
-            Console.WriteLine("coco is listening {0}:{1}", Host, Port);
+            //Console.WriteLine("coco start success!!!");
+            //Console.WriteLine("coco is listening {0}:{1}", Host, Port);
+            CocoLog.LogInformation("coco start success!!!");
+            CocoLog.LogInformation($"coco is listening {Host}:{Port}");
             Console.WriteLine(@"    __ __ __ __              __ __ __ __              __ __ __ __               __ __ __ __    ");
             Console.WriteLine(@"  /    __ __    \          /    __ __    \          /    __ __    \           /    __ __    \  ");
             Console.WriteLine(@" /   /       \   \        /   /       \   \        /   /       \   \         /   /       \   \ ");
@@ -42,15 +45,6 @@ namespace Coco.Server.Hosting
         public void Run()
         {
             Brokers = new List<Broker>();
-
-            var broker = new Broker();
-
-            broker.AddMessage("a");
-            broker.AddMessage("b");
-            broker.AddMessage("c");
-
-            string result = broker.ToString();
-
 
             Topics = new List<MessageTopic>();
             AckTopics = new List<MessageTopic>();
@@ -102,15 +96,15 @@ namespace Coco.Server.Hosting
                     return;
 
                 broker = new Broker(topicName);
-
                 Message msg = new Message(message);
-
                 broker.Messages = msg;
+
+                new Thread(() => MsgReceived(topicName, message)) { IsBackground = true }.Start();
             }
             else
             {
-                if (MsgReceived(topicName, string.Empty))
-                    return;
+                broker.AddMessage(message);
+                new Thread(() => MsgReceived(topicName, message)) { IsBackground = true }.Start();
             }
         }
 
@@ -150,7 +144,11 @@ namespace Coco.Server.Hosting
         {
             var client = SubcribeClients.FirstOrDefault(x => x.TopicName == topicName && x.ClientType == 1);
             if (client is null) return false;
-            if (client._client is null) { SubcribeClients.Remove(client); return false; }
+            if (client._client is null)
+            {
+                SubcribeClients.Remove(client);
+                return false;
+            }
             msg = Pop(topicName);
             client.SendNewMessage(msg);
             return true;
