@@ -21,7 +21,9 @@ namespace Coco.Server.Hosting
         public List<HandleClient> SubcribeClients { get ; set ; }
         public string Persistence { get; set; }
 
-        public void WriteLogo()
+        public List<Broker> Brokers { get; set; }
+
+        public void WriteStartInfo()
         {
             //Console.WriteLine("coco start success!!!");
             //Console.WriteLine("coco is listening {0}:{1}", Host, Port);
@@ -41,9 +43,12 @@ namespace Coco.Server.Hosting
 
         public void Run()
         {
+            Brokers = new List<Broker>();
+
             Topics = new List<MessageTopic>();
             AckTopics = new List<MessageTopic>();
             SubcribeClients = new List<HandleClient>();
+
             IPAddress iPAddress = IPAddress.Parse(Host ?? "0.0.0.0");
             int port = Convert.ToInt32(Port ?? "9527");
             IPEndPoint ipe = new IPEndPoint(iPAddress, port);
@@ -51,16 +56,20 @@ namespace Coco.Server.Hosting
             TcpListener tcpListener = new TcpListener(ipe);
 
             tcpListener.Start();
-            Console.WriteLine("coco start success!!!");
-            Console.WriteLine("coco is listening {0}:{1}", ipe.Address.ToString() == "0.0.0.0" ? "[::]" : ipe.Address.ToString(), ipe.Port);
-            WriteLogo();
 
-            TcpClient tmpTcpClient;
+            WriteStartInfo();
+
+            Accept(tcpListener);
+        }
+
+        private void Accept(TcpListener tcpListener)
+        {
             while (true)
             {
                 try
                 {
-                    tmpTcpClient = tcpListener.AcceptTcpClient();
+
+                    TcpClient tmpTcpClient = tcpListener.AcceptTcpClient();
 
                     if (tmpTcpClient.Connected)
                     {
@@ -77,33 +86,40 @@ namespace Coco.Server.Hosting
             }
         }
 
-        public void Push(string topicName, string msg)
+        public void Push(string topicName, string message)
         {
-            var topic = Topics.FirstOrDefault(x => x.Name == topicName);
-            if (topic is null)
+            var broker = Brokers.FirstOrDefault(x => x.TopicName == topicName);
+            if (broker is null)
             {
-                if (MsgReceived(topicName, msg))
+                if (MsgReceived(topicName, message))
                     return;
 
-                List<string> messages = new List<string>();
-                messages.Add(msg);
-                topic = new MessageTopic
-                {
-                    Name = topicName,
-                    Messages = messages
-                };
+                broker = new Broker(topicName);
+                Message msg = new Message(message);
+                broker.Messages = msg;
 
-                Topics.Add(topic);
+                new Thread(() => MsgReceived(topicName, message)) { IsBackground = true }.Start();
             }
             else
             {
-                topic.Messages.Add(msg);
-                if (MsgReceived(topicName, string.Empty))
-                    return;
+                broker.AddMessage(message);
+                new Thread(() => MsgReceived(topicName, message)) { IsBackground = true }.Start();
             }
         }
 
         public string Pop(string topicName)
+        {
+            var broker = Brokers.FirstOrDefault(x => x.TopicName == topicName);
+            if (broker == null)
+            {
+                return null;
+            }
+            var msg = broker.GetMessage();
+            return msg;
+        }
+
+        [Obsolete]
+        public string Pop1(string topicName)
         {
             var topic = Topics.FirstOrDefault(x => x.Name == topicName);
             var msg = topic?.Messages.FirstOrDefault();
@@ -127,7 +143,11 @@ namespace Coco.Server.Hosting
         {
             var client = SubcribeClients.FirstOrDefault(x => x.TopicName == topicName && x.ClientType == 1);
             if (client is null) return false;
-            if (client._client is null) { SubcribeClients.Remove(client); return false; }
+            if (client._client is null)
+            {
+                SubcribeClients.Remove(client);
+                return false;
+            }
             msg = Pop(topicName);
             client.SendNewMessage(msg);
             return true;
