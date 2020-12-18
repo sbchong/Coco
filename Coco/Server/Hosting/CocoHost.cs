@@ -23,6 +23,10 @@ namespace Coco.Server.Hosting
 
         public void WriteLogo()
         {
+            //Console.WriteLine("coco start success!!!");
+            //Console.WriteLine("coco is listening {0}:{1}", Host, Port);
+            CocoLog.CocoLog.LogInformation("coco start success!!!");
+            CocoLog.CocoLog.LogInformation($"coco is listening {Host}:{Port}");
             Console.WriteLine(@"    __ __ __ __              __ __ __ __              __ __ __ __               __ __ __ __    ");
             Console.WriteLine(@"  /    __ __    \          /    __ __    \          /    __ __    \           /    __ __    \  ");
             Console.WriteLine(@" /   /       \   \        /   /       \   \        /   /       \   \         /   /       \   \ ");
