@@ -13,12 +13,12 @@ namespace Coco.Server.Hosting
 {
     public class CocoHost : ICocoHost
     {
-        public string Host { get ; set ; }
-        public string Port { get ; set ; }
+        public string Host { get; set; }
+        public string Port { get; set; }
         public List<MessageTopic> Topics { get; set; }
-        public List<MessageTopic> AckTopics { get ; set ; }
-        public IServiceProvider Services { get ; set ; }
-        public List<HandleClient> SubcribeClients { get ; set ; }
+        public List<MessageTopic> AckTopics { get; set; }
+        public IServiceProvider Services { get; set; }
+        public List<HandleClient> SubcribeClients { get; set; }
         public string Persistence { get; set; }
 
         public List<Broker> Brokers { get; set; }
@@ -91,20 +91,11 @@ namespace Coco.Server.Hosting
             var broker = Brokers.FirstOrDefault(x => x.TopicName == topicName);
             if (broker is null)
             {
-                if (MsgReceived(topicName, message))
-                    return;
-
                 broker = new Broker(topicName);
-                Message msg = new Message(message);
-                broker.Messages = msg;
+            }
 
-                new Thread(() => MsgReceived(topicName, message)) { IsBackground = true }.Start();
-            }
-            else
-            {
-                broker.AddMessage(message);
-                new Thread(() => MsgReceived(topicName, message)) { IsBackground = true }.Start();
-            }
+            broker.AddMessage(message);
+            new Thread(() => MsgReceived(topicName, message)) { IsBackground = true }.Start();
         }
 
         public string Pop(string topicName)
