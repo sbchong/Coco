@@ -28,18 +28,19 @@ namespace Coco.Server.CocoLog
                 File.Create(logFileName);
                 init = true;
             }
-            else
-            {
-                if (File.Exists(logFileName))
-                {
-                    File.Create(logFileName);
-                    init = true;
-                }
-                else
-                {
-                    init = true;
-                }
-            }
+            //else
+            //{
+            //    if (File.Exists(logFileName))
+            //    {
+            //        File.Create(logFileName);
+            //        init = true;
+            //    }
+            //    else
+            //    {
+            //        init = true;
+            //    }
+            //}
+            init = true;
         }
 
         public static void LogInformation(string infomation)
@@ -52,13 +53,21 @@ namespace Coco.Server.CocoLog
             logs.Add($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] {infomation}\n");
             if (ok)
             {
-                new Thread(WriteToFile).Start();
+                new Thread(WriteToFile) { IsBackground = true }.Start();
             }
         }
 
         public static void WriteToFile()
         {
-            using var fs = new FileStream(logFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            //foreach (var log in logs)
+            //{
+            //File.AppendAllLines(logFileName, logs);
+            //}
+            if (File.Exists(logFilePath))
+            {
+                File.Create(logFilePath).Dispose();
+            }
+            using var fs = new FileStream(logFileName, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             foreach (var log in logs)
             {
                 fs.Write(Encoding.UTF8.GetBytes(log));
