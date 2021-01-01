@@ -50,7 +50,7 @@ namespace Coco.Server.CocoLog
             {
                 Init();
             }
-            logs.Add($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] {infomation}\n");
+            logs.Add($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {infomation}\n");
             if (ok)
             {
                 new Thread(WriteToFile) { IsBackground = true }.Start();
