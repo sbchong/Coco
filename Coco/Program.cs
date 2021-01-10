@@ -4,7 +4,7 @@ namespace Coco
 {
     class Program
     {
-        static void Main(string[] args)=>
+        static void Main(string[] args) =>
             CreateCocoHostBuilder(args).Build().Run();
 
         public static ICocoHostBuilder CreateCocoHostBuilder(string[] args) =>

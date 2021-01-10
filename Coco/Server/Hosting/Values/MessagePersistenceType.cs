@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Coco.Server.Hosting.Values
+﻿namespace Coco.Server.Hosting.Values
 {
     public static class MessagePersistenceType
     {

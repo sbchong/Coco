@@ -1,6 +1,5 @@
 ﻿using Coco.Server.Hosting;
 using System;
-using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -8,42 +7,41 @@ namespace Coco.Server.Communication
 {
     public class HandleClient : IDisposable
     {
-        public TcpClient _client;
-        public CocoHost _server;
-
-        private string topicName;
-        private volatile string Msg = null;
-
+        private bool disposed = false;
         public bool Flag { get; set; } = false;
 
-        private bool disposed = false;
-
-        CommunicationBase cb;
-
-        public event Action<Guid> CommunicateEnd;
-
+        public TcpClient Client { get; set; }
+        public CocoHost Server { get; set; }
+        public string TopicName { get; set; }
+        public CommunicationBase Communication { get; set; }
         public Guid Id { get; set; }
         public int ClientType { get; set; }
-        public string TopicName { get => topicName; set => topicName = value; }
 
-        public HandleClient(Guid id,TcpClient client, CocoHost server)
+        public event Action<HandleClient> CommunicationStart;
+        public event Action<Guid> CommunicateEnd;
+
+        public HandleClient(Guid id, TcpClient client, CocoHost server)
         {
-            _client = client;
-            _server = server;
+            Client = client;
+            Server = server;
             Id = id;
-            cb = new CommunicationBase();
+            Communication = new CommunicationBase();
+
+            CommunicationStart += Server.AddSubscribeClient;
+            CommunicateEnd += Server.RemoveSubscribeClient;
+
         }
 
         public void Communicate()
         {
             try
             {
-                string content = cb.ReceiveMsg(this._client);
+                string content = Communication.ReceiveMsg(Client);
 
                 var part = content.Split("^^^");
 
                 var method = part[0];
-                topicName = part[1];
+                TopicName = part[1];
 
                 ClientType = Convert.ToInt32(method);
 
@@ -53,17 +51,18 @@ namespace Coco.Server.Communication
                     string msg = part[2];
                     if (!string.IsNullOrEmpty(msg))
                     {
-                        _server.Push(topicName, msg);
+                        Server.Push(TopicName, msg);
                     }
                     SendCompeleted();
-                    this._client.Close();
+                    this.Client.Close();
                     CommunicateEnd?.Invoke(this.Id);
                 }
 
                 //只有消费者会被维护链接
                 else if (ClientType == 1)
                 {
-                    if (SendMessage(topicName))
+                    CommunicationStart.Invoke(this);
+                    if (TrySendMessage(TopicName))
                     {
                         CommunicateEnd?.Invoke(this.Id);
                     }
@@ -75,26 +74,27 @@ namespace Coco.Server.Communication
                         CommunicateEnd?.Invoke(this.Id);
                     }
                 }
-                else this._client.Close();
+                else this.Client.Close();
             }
             catch (Exception ex)
             {
-                this._client.Close();
+                CocoLog.LogError(ex.Message);
+                this.Client.Close();
                 CommunicateEnd?.Invoke(this.Id);
             }
         }
 
         public void SendCompeleted()
         {
-            cb.SendMsg($"Ok", this._client);
+            Communication.SendMsg($"Ok", this.Client);
         }
 
-        public bool SendMessage(string topicName)
+        public bool TrySendMessage(string topicName)
         {
-            Msg = _server.Pop(topicName);
-            if (!string.IsNullOrEmpty(Msg))
+            var msg = Server.Pop(topicName);
+            if (!string.IsNullOrEmpty(msg))
             {
-                cb.SendMsg(Msg, this._client);
+                Communication.SendMsg(msg, this.Client);
                 return true;
             }
             else
@@ -103,17 +103,17 @@ namespace Coco.Server.Communication
 
         public void SendNewMessage(string msg)
         {
-            if (_client is null)
+            if (Client is null)
             {
                 CommunicateEnd?.Invoke(this.Id);
                 return;
             }
-            cb.SendMsg(msg, this._client);
-            cb.Close();
+            Communication.SendMsg(msg, this.Client);
+            Communication.Close();
             CommunicateEnd?.Invoke(this.Id);
         }
 
-        private void Send(object sender, string msg) => cb.SendMsg(msg, this._client);
+        private void Send(object sender, string msg) => Communication.SendMsg(msg, this.Client);
 
         public void Dispose()
         {
@@ -149,10 +149,10 @@ namespace Coco.Server.Communication
             if (disposing)
             {
                 // 清理托管资源
-                if (_client != null)
+                if (Client != null)
                 {
-                    _client.Dispose();
-                    _client = null;
+                    Client.Dispose();
+                    Client = null;
                 }
             }
             //// 清理非托管资源

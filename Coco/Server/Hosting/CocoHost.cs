@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Coco.Server.Hosting
@@ -23,12 +22,13 @@ namespace Coco.Server.Hosting
 
         public List<Broker> Brokers { get; set; }
 
+
         public void WriteStartInfo()
         {
             //Console.WriteLine("coco start success!!!");
             //Console.WriteLine("coco is listening {0}:{1}", Host, Port);
-            CocoLog.CocoLog.LogInformation("coco start success!!!");
-            CocoLog.CocoLog.LogInformation($"coco is listening {Host}:{Port}");
+            CocoLog.LogInformation("coco start success!!!");
+            CocoLog.LogInformation($"coco is listening {Host}:{Port}");
             Console.WriteLine(@"    __ __ __ __              __ __ __ __              __ __ __ __               __ __ __ __    ");
             Console.WriteLine(@"  /    __ __    \          /    __ __    \          /    __ __    \           /    __ __    \  ");
             Console.WriteLine(@" /   /       \   \        /   /       \   \        /   /       \   \         /   /       \   \ ");
@@ -75,9 +75,6 @@ namespace Coco.Server.Hosting
                     {
                         var clientId = Guid.NewGuid();
                         HandleClient handleClient = new HandleClient(clientId, tmpTcpClient, this);
-                        SubcribeClients.Add(handleClient);
-
-                        handleClient.CommunicateEnd += CommunicateEnd;
 
                         new Thread(handleClient.Communicate) { IsBackground = true }.Start();
                     }
@@ -86,12 +83,30 @@ namespace Coco.Server.Hosting
             }
         }
 
+        public void AddSubscribeClient(HandleClient client)
+        {
+            SubcribeClients.Add(client);
+        }
+
+        public void RemoveSubscribeClient(Guid clientId)
+        {
+            //Console.WriteLine(HandleClients.Count);
+            var client = SubcribeClients.FirstOrDefault(x => x.Id == clientId);
+            if (client != null)
+            {
+                SubcribeClients.Remove(client);
+                client = null;
+            }
+        }
+
+
         public void Push(string topicName, string message)
         {
             var broker = Brokers.FirstOrDefault(x => x.TopicName == topicName);
             if (broker is null)
             {
                 broker = new Broker(topicName);
+                Brokers.Add(broker);
             }
 
             broker.AddMessage(message);
@@ -119,29 +134,22 @@ namespace Coco.Server.Hosting
             return msg;
         }
 
-        public void CommunicateEnd(Guid clientId)
-        {
-            //Console.WriteLine(HandleClients.Count);
-            var client = SubcribeClients.FirstOrDefault(x => x.Id == clientId);
-            if (client != null)
-            {
-                SubcribeClients.Remove(client);
-                client = null;
-            }
-        }
 
-        public bool MsgReceived(string topicName, string msg)
+
+        public void MsgReceived(string topicName, string msg)
         {
-            var client = SubcribeClients.FirstOrDefault(x => x.TopicName == topicName && x.ClientType == 1);
-            if (client is null) return false;
-            if (client._client is null)
+            var client = SubcribeClients.FirstOrDefault(x => x.TopicName == topicName);
+            if (client is null) return ;
+            if (client.Client is null)
             {
                 SubcribeClients.Remove(client);
-                return false;
+                return ;
             }
             msg = Pop(topicName);
-            client.SendNewMessage(msg);
-            return true;
+            if (!string.IsNullOrEmpty(msg))
+            {
+                client.SendNewMessage(msg);
+            }
         }
 
         //public void AddClient(string topicName, TcpClient tcpClient)

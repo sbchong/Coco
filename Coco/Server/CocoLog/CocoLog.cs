@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace Coco.Server.CocoLog
+namespace Coco.Server
 {
     public static class CocoLog
     {
@@ -26,38 +24,38 @@ namespace Coco.Server.CocoLog
             {
                 Directory.CreateDirectory(logFilePath);
                 File.Create(logFileName);
-                init = true;
             }
-            //else
-            //{
-            //    if (File.Exists(logFileName))
-            //    {
-            //        File.Create(logFileName);
-            //        init = true;
-            //    }
-            //    else
-            //    {
-            //        init = true;
-            //    }
-            //}
             init = true;
         }
 
         public static void LogInformation(string infomation)
         {
-            Console.WriteLine(infomation);
+            var value = $"INFO ==> \n[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {infomation}\n";
+            Console.WriteLine(value);
+            Log(value);
+        }
+
+        public static void LogError(string error)
+        {
+            var value = $"ERROR ==> \n[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {error}";
+               Console.WriteLine(value);
+            Log(value);
+        }
+
+        private static void Log(string value)
+        {
             if (!init)
             {
                 Init();
             }
-            logs.Add($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {infomation}\n");
+            logs.Add(value);
             if (ok)
             {
                 new Thread(WriteToFile) { IsBackground = true }.Start();
             }
         }
 
-        public static void WriteToFile()
+        private static void WriteToFile()
         {
             //foreach (var log in logs)
             //{

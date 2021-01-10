@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Coco.Server.Hosting
+﻿namespace Coco.Server.Hosting
 {
     public static class Host
     {

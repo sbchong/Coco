@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Coco.Server.Communication
 {
-    public class CommunicationBase:IDisposable
+    public class CommunicationBase : IDisposable
     {
         private bool disposed;
 
