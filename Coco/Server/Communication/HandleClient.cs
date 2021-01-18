@@ -108,7 +108,7 @@ namespace Coco.Server.Communication
                 CommunicateEnd?.Invoke(this.Id);
                 return;
             }
-            Communication.SendMsg(msg, this.Client);
+            Communication.SendMsg(msg, Client);
             Communication.Close();
             CommunicateEnd?.Invoke(this.Id);
         }

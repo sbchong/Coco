@@ -124,15 +124,15 @@ namespace Coco.Server.Hosting
             return msg;
         }
 
-        [Obsolete]
-        public string Pop1(string topicName)
-        {
-            var topic = Topics.FirstOrDefault(x => x.Name == topicName);
-            var msg = topic?.Messages.FirstOrDefault();
-            if (msg is null) { return null; }
-            topic.Messages.Remove(msg);
-            return msg;
-        }
+        //[Obsolete]
+        //public string Pop1(string topicName)
+        //{
+        //    var topic = Topics.FirstOrDefault(x => x.Name == topicName);
+        //    var msg = topic?.Messages.FirstOrDefault();
+        //    if (msg is null) { return null; }
+        //    topic.Messages.Remove(msg);
+        //    return msg;
+        //}
 
 
 
