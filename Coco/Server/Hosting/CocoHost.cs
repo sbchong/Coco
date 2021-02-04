@@ -41,7 +41,7 @@ namespace Coco.Server.Hosting
             Console.WriteLine();
         }
 
-        public void Run()
+        public async Task Run()
         {
             Brokers = new List<Broker>();
 
@@ -59,27 +59,32 @@ namespace Coco.Server.Hosting
 
             WriteStartInfo();
 
-            Accept(tcpListener);
+            await Accept(tcpListener);
         }
 
-        private void Accept(TcpListener tcpListener)
+        private async Task Accept(TcpListener tcpListener)
         {
             while (true)
             {
                 try
                 {
 
-                    TcpClient tmpTcpClient = tcpListener.AcceptTcpClient();
+                    TcpClient tmpTcpClient = await tcpListener.AcceptTcpClientAsync();
 
                     if (tmpTcpClient.Connected)
                     {
-                        var clientId = Guid.NewGuid();
-                        HandleClient handleClient = new HandleClient(clientId, tmpTcpClient, this);
 
-                        new Thread(handleClient.Communicate) { IsBackground = true }.Start();
+
+                        await Task.Run(() =>
+                        {
+                            var clientId = Guid.NewGuid();
+                            HandleClient handleClient = new HandleClient(clientId, tmpTcpClient, this);
+                            handleClient.Communicate();
+                        });
+                        // new Thread(handleClient.Communicate) { IsBackground = true }.Start();
                     }
                 }
-                catch (Exception ex) { Console.WriteLine(ex.Message); }
+                catch (Exception ex) { CocoLog.LogError(ex.Message); }
             }
         }
 
@@ -139,11 +144,11 @@ namespace Coco.Server.Hosting
         public void MsgReceived(string topicName, string msg)
         {
             var client = SubcribeClients.FirstOrDefault(x => x.TopicName == topicName);
-            if (client is null) return ;
+            if (client is null) return;
             if (client.Client is null)
             {
                 SubcribeClients.Remove(client);
-                return ;
+                return;
             }
             msg = Pop(topicName);
             if (!string.IsNullOrEmpty(msg))
