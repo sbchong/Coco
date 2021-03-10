@@ -1,4 +1,6 @@
-﻿namespace Coco.Server.Hosting
+﻿using Coco.Hosting.Builder;
+
+namespace Coco.Hosting.Hosting
 {
     public static class Host
     {

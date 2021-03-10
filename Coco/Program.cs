@@ -1,4 +1,5 @@
-﻿using Coco.Server.Hosting;
+﻿using Coco.Hosting.Builder;
+using Coco.Hosting.Hosting;
 
 namespace Coco
 {

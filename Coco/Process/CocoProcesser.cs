@@ -1,11 +1,13 @@
-﻿using Coco.Server.Hosting;
+﻿using Coco.Communication.Base;
+using Coco.Hosting.Hosting;
+using Coco.Log;
 using System;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Coco.Server.Communication
+namespace Coco.Process
 {
-    public class HandleClient : IDisposable
+    public class CocoProcesser : IDisposable
     {
         private bool disposed = false;
         public bool Flag { get; set; } = false;
@@ -17,10 +19,10 @@ namespace Coco.Server.Communication
         public Guid Id { get; set; }
         public int ClientType { get; set; }
 
-        public event Action<HandleClient> CommunicationStart;
+        public event Action<CocoProcesser> CommunicationStart;
         public event Action<Guid> CommunicateEnd;
 
-        public HandleClient(Guid id, TcpClient client, CocoHost server)
+        public CocoProcesser(Guid id, TcpClient client, CocoHost server)
         {
             Client = client;
             Server = server;
@@ -78,7 +80,7 @@ namespace Coco.Server.Communication
             }
             catch (Exception ex)
             {
-                CocoLog.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 this.Client.Close();
                 CommunicateEnd?.Invoke(this.Id);
             }
@@ -129,7 +131,7 @@ namespace Coco.Server.Communication
         ///<summary>
         /// 必须，以备忘记了显式调用Dispose方法
         ///</summary>
-        ~HandleClient()
+        ~CocoProcesser()
         {
             //必须为false
             Dispose(false);

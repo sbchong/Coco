@@ -1,5 +1,7 @@
-﻿using Coco.Queue;
-using Coco.Server.Communication;
+﻿using Coco.Hosting.Extension;
+using Coco.Log;
+using Coco.Process;
+using Coco.Queue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +10,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Coco.Server.Hosting
+namespace Coco.Hosting.Hosting
 {
     public class CocoHost : ICocoHost
     {
@@ -17,29 +19,24 @@ namespace Coco.Server.Hosting
         public List<MessageTopic> Topics { get; set; }
         public List<MessageTopic> AckTopics { get; set; }
         public IServiceProvider Services { get; set; }
-        public List<HandleClient> SubcribeClients { get; set; }
+
+        /// <summary>
+        /// 消费者客户端
+        /// </summary>
+        public List<CocoProcesser> SubcribeClients { get; set; }
+
+
         public string Persistence { get; set; }
 
+        /// <summary>
+        /// 消息管道
+        /// </summary>
         public List<Broker> Brokers { get; set; }
 
 
-        public void WriteStartInfo()
-        {
-            //Console.WriteLine("coco start success!!!");
-            //Console.WriteLine("coco is listening {0}:{1}", Host, Port);
-            CocoLog.LogInformation("coco start success!!!");
-            CocoLog.LogInformation($"coco is listening {Host}:{Port}");
-            Console.WriteLine(@"    __ __ __ __              __ __ __ __              __ __ __ __               __ __ __ __    ");
-            Console.WriteLine(@"  /    __ __    \          /    __ __    \          /    __ __    \           /    __ __    \  ");
-            Console.WriteLine(@" /   /       \   \        /   /       \   \        /   /       \   \         /   /       \   \ ");
-            Console.WriteLine(@"|   |         | _ |      |   |         |   |      |   |         | _ |       |   |         |   |");
-            Console.WriteLine(@"|   |                    |   |         |   |      |   |                     |   |         |   |");
-            Console.WriteLine(@"|   |           _        |   |         |   |      |   |           _         |   |         |   |");
-            Console.WriteLine(@"|   |         |   |      |   |         |   |      |   |         |   |       |   |         |   |");
-            Console.WriteLine(@" \   \ __ __ /   /        \   \ __ __ /   /        \   \ __ __ /   /         \   \ __ __ /   /");
-            Console.WriteLine(@"  \ __ __ __ __ /          \ __ __ __ __ /          \ __ __ __ __ /           \ __ __ __ __ / ");
-            Console.WriteLine();
-        }
+
+
+
 
         public async Task Run()
         {
@@ -47,7 +44,7 @@ namespace Coco.Server.Hosting
 
             Topics = new List<MessageTopic>();
             AckTopics = new List<MessageTopic>();
-            SubcribeClients = new List<HandleClient>();
+            SubcribeClients = new List<CocoProcesser>();
 
             IPAddress iPAddress = IPAddress.Parse(Host ?? "0.0.0.0");
             int port = Convert.ToInt32(Port ?? "9527");
@@ -57,7 +54,10 @@ namespace Coco.Server.Hosting
 
             tcpListener.Start();
 
-            WriteStartInfo();
+            Logger.LogInformation("coco start success!!!");
+            Logger.LogInformation($"coco is listening {Host}:{Port}");
+
+            this.WriteStartInfo();
 
             await Accept(tcpListener);
         }
@@ -78,17 +78,21 @@ namespace Coco.Server.Hosting
                         await Task.Run(() =>
                         {
                             var clientId = Guid.NewGuid();
-                            HandleClient handleClient = new HandleClient(clientId, tmpTcpClient, this);
+                            CocoProcesser handleClient = new CocoProcesser(clientId, tmpTcpClient, this);
                             handleClient.Communicate();
                         });
                         // new Thread(handleClient.Communicate) { IsBackground = true }.Start();
                     }
                 }
-                catch (Exception ex) { CocoLog.LogError(ex.Message); }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex.Message);
+                    break;
+                }
             }
         }
 
-        public void AddSubscribeClient(HandleClient client)
+        public void AddSubscribeClient(CocoProcesser client)
         {
             SubcribeClients.Add(client);
         }

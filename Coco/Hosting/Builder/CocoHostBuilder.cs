@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Coco.Hosting.Hosting;
+using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
 
-namespace Coco.Server.Hosting
+namespace Coco.Hosting.Builder
 {
     public class CocoHostBuilder : ICocoHostBuilder
     {

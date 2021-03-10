@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Coco.Hosting.Hosting;
+using System;
 
-namespace Coco.Server.Hosting
+namespace Coco.Hosting.Builder
 {
     public interface ICocoHostBuilder
     {

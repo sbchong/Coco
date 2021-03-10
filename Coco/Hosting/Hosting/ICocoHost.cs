@@ -1,11 +1,11 @@
-﻿using Coco.Queue;
-using Coco.Server.Communication;
+﻿using Coco.Process;
+using Coco.Queue;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Coco.Server.Hosting
+namespace Coco.Hosting.Hosting
 {
     public interface ICocoHost : IDisposable
     {
@@ -14,7 +14,7 @@ namespace Coco.Server.Hosting
         public List<MessageTopic> Topics { get; set; }
         public List<MessageTopic> AckTopics { get; set; }
         public IServiceProvider Services { get; set; }
-        public List<HandleClient> SubcribeClients { get; set; }
+        public List<CocoProcesser> SubcribeClients { get; set; }
         public string Persistence { get; set; }
         Task StartAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task Run();

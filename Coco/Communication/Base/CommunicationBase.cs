@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 
-namespace Coco.Server.Communication
+namespace Coco.Communication.Base
 {
     public class CommunicationBase : IDisposable
     {
