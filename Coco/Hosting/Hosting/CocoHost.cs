@@ -69,7 +69,7 @@ namespace Coco.Hosting.Hosting
                 try
                 {
 
-                    TcpClient tmpTcpClient = await tcpListener.AcceptTcpClientAsync();
+                    TcpClient tmpTcpClient =  tcpListener.AcceptTcpClient();
 
                     if (tmpTcpClient.Connected)
                     {

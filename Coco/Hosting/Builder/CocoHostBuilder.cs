@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Coco.Hosting.Builder
 {
@@ -14,17 +15,19 @@ namespace Coco.Hosting.Builder
 
         public CocoHostBuilder()
         {
-            cocoHost = new CocoHost();
+            if (cocoHost is null)
+            {
+                cocoHost = new CocoHost();
+            }
         }
 
-        public CocoHostBuilder(string[] args)
-        {
-            cocoHost = new CocoHost();
 
+        public ICocoHostBuilder ConfigureCocoHostDefaults(string[] args)
+        {
             var filePath = Path.Combine(AppContext.BaseDirectory, ConfigurationFileName);
             if (File.Exists(filePath))
             {
-                var json = File.ReadAllText(filePath);
+                var json =  File.ReadAllText(filePath);
 
                 using (JsonDocument document = JsonDocument.Parse(json))
                 {
@@ -37,10 +40,7 @@ namespace Coco.Hosting.Builder
 
 
 
-
-            if (args.Length <= 1 || args == null)
-                return;
-            else
+            if (args is not null && args.Length > 1)
             {
                 for (int i = 0; i < args.Length; i += 2)
                 {
@@ -52,12 +52,7 @@ namespace Coco.Hosting.Builder
                     }
                 }
             }
-        }
 
-
-        public ICocoHostBuilder ConfigureCocoHostDefaults(Action<ICocoHostBuilder> configureDelegate)
-        {
-            configureDelegate(this);
             return this;
         }
 
