@@ -8,7 +8,7 @@ Coco is an open source, cross-platform message queuing service. It is very simpl
 
 - [x] **Lightweight and simple, the standalone version is less than 50MB in size, the runtime dependent version depends on .Net Core 5, and the size is less than 1MB**
 - [x] **Easy to use, support json file (low) and startup parameter (high) configuration**
-- [ ] Use memory efficient store and forward by default, support database (plan to use Entity Framewrok Core) and file for persistence processing
+- [x] Use memory efficient store and forward 
 - [x] Upgrade version to .Net 5
 
 ## Instructions
