@@ -33,43 +33,52 @@ namespace Coco.Hosting.Hosting
         /// </summary>
         public List<Broker> Brokers { get; set; }
 
-
-
-
+        public TcpListener CocoListenner { get; set; }
 
 
         public async Task Run()
         {
-            Brokers = new List<Broker>();
+            Init();
+            this.WriteStartInfo();
 
+            try
+            {
+                IPAddress iPAddress = IPAddress.Parse(Host ?? "0.0.0.0");
+                int port = Convert.ToInt32(Port ?? "9527");
+                var ipe = new IPEndPoint(iPAddress, port);
+                CocoListenner = new TcpListener(ipe);
+
+                CocoListenner.Start();
+
+                Logger.LogInformation("coco start success!!!");
+                Logger.LogInformation($"coco is listening {Host}:{Port}");
+
+
+
+                await Accept();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"coco start error : {ex.Message}");
+            }
+        }
+
+        public void Init()
+        {
+            Brokers = new List<Broker>();
             Topics = new List<MessageTopic>();
             AckTopics = new List<MessageTopic>();
             SubcribeClients = new List<CocoProcesser>();
-
-            IPAddress iPAddress = IPAddress.Parse(Host ?? "0.0.0.0");
-            int port = Convert.ToInt32(Port ?? "9527");
-            IPEndPoint ipe = new IPEndPoint(iPAddress, port);
-
-            TcpListener tcpListener = new TcpListener(ipe);
-
-            tcpListener.Start();
-
-            Logger.LogInformation("coco start success!!!");
-            Logger.LogInformation($"coco is listening {Host}:{Port}");
-
-            this.WriteStartInfo();
-
-            await Accept(tcpListener);
         }
 
-        private async Task Accept(TcpListener tcpListener)
+        private async Task Accept()
         {
             while (true)
             {
                 try
                 {
 
-                    TcpClient tmpTcpClient =  tcpListener.AcceptTcpClient();
+                    TcpClient tmpTcpClient = CocoListenner.AcceptTcpClient();
 
                     if (tmpTcpClient.Connected)
                     {
