@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="Hosting\Hosting\Host\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>

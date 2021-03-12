@@ -35,7 +35,10 @@ namespace Coco.Hosting.Hosting
 
         public TcpListener CocoListenner { get; set; }
 
-
+        /// <summary>
+        /// 启动COCO主机，初始化数据，绑定网络
+        /// </summary>
+        /// <returns></returns>
         public async Task Run()
         {
             Init();
@@ -82,15 +85,16 @@ namespace Coco.Hosting.Hosting
 
                     if (tmpTcpClient.Connected)
                     {
-
-
                         await Task.Run(() =>
                         {
                             var clientId = Guid.NewGuid();
-                            CocoProcesser handleClient = new CocoProcesser(clientId, tmpTcpClient, this);
+                            CocoProcesser handleClient = new(clientId, tmpTcpClient, this);
                             handleClient.Communicate();
+
+                            //TODO: 使用RX
+
+
                         });
-                        // new Thread(handleClient.Communicate) { IsBackground = true }.Start();
                     }
                 }
                 catch (Exception ex)

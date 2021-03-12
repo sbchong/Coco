@@ -1,8 +1,11 @@
 ﻿using Coco.Communication.Base;
 using Coco.Hosting.Hosting;
 using Coco.Log;
+using Coco.Models;
 using System;
 using System.Net.Sockets;
+using System.Reactive;
+using System.Reactive.Subjects;
 using System.Threading;
 
 namespace Coco.Process
@@ -21,6 +24,8 @@ namespace Coco.Process
 
         public event Action<CocoProcesser> CommunicationStart;
         public event Action<Guid> CommunicateEnd;
+
+        public Subject<ParseMessage> AfterParseMessage { get; set; } = new Subject<ParseMessage>();
 
         public CocoProcesser(Guid id, TcpClient client, CocoHost server)
         {
@@ -85,6 +90,7 @@ namespace Coco.Process
                 CommunicateEnd?.Invoke(this.Id);
             }
         }
+
 
         public void SendCompeleted()
         {
