@@ -1,6 +1,6 @@
 ﻿using Coco.Communication.Base;
 using Coco.Hosting.Hosting;
-using Coco.Log;
+using Coco.Logger;
 using Coco.Models;
 using System;
 using System.Net.Sockets;
@@ -85,7 +85,7 @@ namespace Coco.Process
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                Log.LogError(ex.Message);
                 this.Client.Close();
                 CommunicateEnd?.Invoke(this.Id);
             }

@@ -1,5 +1,5 @@
 ﻿using Coco.Hosting.Extension;
-using Coco.Log;
+using Coco.Logger;
 using Coco.Process;
 using Coco.Queue;
 using System;
@@ -53,8 +53,8 @@ namespace Coco.Hosting.Hosting
 
                 CocoListenner.Start();
 
-                Logger.LogInformation("coco start success!!!");
-                Logger.LogInformation($"coco is listening {Host}:{Port}");
+                Log.LogInformation("coco start success!!!");
+                Log.LogInformation($"coco is listening {Host}:{Port}");
 
 
 
@@ -62,7 +62,7 @@ namespace Coco.Hosting.Hosting
             }
             catch (Exception ex)
             {
-                Logger.LogError($"coco start error : {ex.Message}");
+                Log.LogError($"coco start error : {ex.Message}");
             }
         }
 
@@ -99,7 +99,7 @@ namespace Coco.Hosting.Hosting
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex.Message);
+                    Log.LogError(ex.Message);
                     break;
                 }
             }
