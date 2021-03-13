@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Sockets;
 using System.Text;
 
@@ -13,12 +13,12 @@ namespace Coco.Communication.Base
         /// </summary>
         /// <param name="msg">消息</param>
         /// <param name="tmpTcpClient">TcpClient</param>
-        public void SendMsg(string msg, TcpClient tmpTcpClient)
+        public void SendMsg(byte[] msgByte, TcpClient tmpTcpClient)
         {
             NetworkStream ns = tmpTcpClient.GetStream();
             if (ns.CanWrite)
             {
-                byte[] msgByte = Encoding.UTF8.GetBytes(msg);
+                // byte[] msgByte = Encoding.UTF8.GetBytes(msg);
                 ns.Write(msgByte, 0, msgByte.Length);
             }
         }
