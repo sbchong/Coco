@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Coco.Logger
 {
+    /// <summary>
+    /// 日志记录，分为两个等级，information和error，使用滚动文件记录，在应用启动时检查日志文件
+    /// </summary>
     public static class Log
     {
         private static readonly string logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".log");
