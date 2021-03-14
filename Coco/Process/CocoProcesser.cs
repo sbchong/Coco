@@ -94,7 +94,7 @@ namespace Coco.Process
 
         public void SendCompeleted()
         {
-            Communication.SendMsg($"Ok", this.Client);
+            //Communication.SendMsg($"Ok", this.Client);
         }
 
         public bool TrySendMessage(string topicName)
@@ -102,7 +102,7 @@ namespace Coco.Process
             var msg = Server.Pop(topicName);
             if (!string.IsNullOrEmpty(msg))
             {
-                Communication.SendMsg(msg, this.Client);
+                //Communication.SendMsg(msg, this.Client);
                 return true;
             }
             else
@@ -116,12 +116,12 @@ namespace Coco.Process
                 CommunicateEnd?.Invoke(this.Id);
                 return;
             }
-            Communication.SendMsg(msg, Client);
+            //Communication.SendMsg(msg, Client);
             Communication.Close();
             CommunicateEnd?.Invoke(this.Id);
         }
 
-        private void Send(object sender, string msg) => Communication.SendMsg(msg, this.Client);
+        private void Send(object sender, string msg) { }//Communication.SendMsg(msg, this.Client);
 
         public void Dispose()
         {

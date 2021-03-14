@@ -1,44 +1,19 @@
-using System;
-using System.Net.Sockets;
-using System.Text;
-using Coco.Communication.Base;
-using Coco.Enums;
+﻿using Coco.Communication.Base;
 using Coco.Process;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Coco.Communication
 {
-    public class MessageSender : IDisposable
+    public class MessageReceiver : IDisposable
     {
         private bool disposed;
         private CocoProcesser cocoProcesser;
         private CommunicationBase communication;
         private byte[] msgBytes;
-
-        public MessageSender(CocoProcesser processer)
-        {
-            cocoProcesser = processer;
-            communication = new CommunicationBase();
-        }
-
-        public void Send(string message)
-        {
-            msgBytes = Encoding.UTF8.GetBytes(message);
-
-            communication.SendMsg(msgBytes, cocoProcesser.Client);
-        }
-
-        public void Send(string message, EncodingType encoding)
-        {
-            switch (encoding)
-            {
-                case EncodingType.UTF8:
-                    msgBytes = Encoding.UTF8.GetBytes(message);
-                    break;
-            }
-
-            communication.SendMsg(msgBytes, cocoProcesser.Client);
-        }
-
         public void Dispose()
         {
             Dispose(true);
@@ -53,7 +28,7 @@ namespace Coco.Communication
         ///<summary>
         /// 必须，以备忘记了显式调用Dispose方法
         ///</summary>
-        ~MessageSender()
+        ~MessageReceiver()
         {
             //必须为false
             Dispose(false);
@@ -85,5 +60,4 @@ namespace Coco.Communication
             disposed = true;
         }
     }
-
 }
