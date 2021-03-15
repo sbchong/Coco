@@ -17,6 +17,6 @@ namespace Coco.Hosting.Hosting
         public List<CocoProcesser> SubcribeClients { get; set; }
         public string Persistence { get; set; }
         Task StartAsync(CancellationToken cancellationToken = default(CancellationToken));
-        Task Run();
+        void Run();
     }
 }

@@ -39,7 +39,7 @@ namespace Coco.Hosting.Hosting
         /// 启动COCO主机，初始化数据，绑定网络
         /// </summary>
         /// <returns></returns>
-        public async Task Run()
+        public void Run()
         {
             Init();
             this.WriteStartInfo();
@@ -58,7 +58,7 @@ namespace Coco.Hosting.Hosting
 
 
 
-                await Accept();
+                Accept();
             }
             catch (Exception ex)
             {
@@ -74,7 +74,7 @@ namespace Coco.Hosting.Hosting
             SubcribeClients = new List<CocoProcesser>();
         }
 
-        private async Task Accept()
+        private void Accept()
         {
             while (true)
             {
@@ -85,16 +85,21 @@ namespace Coco.Hosting.Hosting
 
                     if (tmpTcpClient.Connected)
                     {
-                        await Task.Run(() =>
-                        {
-                            var clientId = Guid.NewGuid();
-                            CocoProcesser handleClient = new(clientId, tmpTcpClient, this);
-                            handleClient.Communicate();
+                        Task.Run(() =>
+                                  {
+                                      Guid clientId = Guid.NewGuid();
+                                      CocoProcesser processer = new(tmpTcpClient, this);
+                                      processer.Com();
 
-                            //TODO: 使用RX
+                                      //TODO: 使用RX
+                                      processer.AfterParseMessage.Subscribe();
 
+                                      processer.AfterClosed().Subscribe(x =>
+                                      {
+                                          Log.LogInformation(x.ToString());
+                                      });
 
-                        });
+                                  });
                     }
                 }
                 catch (Exception ex)

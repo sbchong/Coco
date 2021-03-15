@@ -1,8 +1,8 @@
-﻿using Coco.Communication.Base;
-using Coco.Process;
+﻿using Coco.Process;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,8 +12,39 @@ namespace Coco.Communication
     {
         private bool disposed;
         private CocoProcesser cocoProcesser;
-        private CommunicationBase communication;
         private byte[] msgBytes;
+
+
+        public MessageReceiver(CocoProcesser processer)
+        {
+            cocoProcesser = processer;
+        }
+
+
+        /// <summary>
+        /// 接收消息
+        /// </summary>
+        /// <param name="tmpTcpClient">TcpClient</param>
+        /// <returns>消息</returns>
+        public string ReceiveMessageAsync(TcpClient tmpTcpClient)
+        {
+            string receiveMsg = string.Empty;
+            byte[] receiveBytes = new byte[tmpTcpClient.ReceiveBufferSize];
+            int numberOfBytesRead = 0;
+            NetworkStream ns = tmpTcpClient.GetStream();
+
+            if (ns.CanRead)
+            {
+                do
+                {
+                    numberOfBytesRead = ns.Read(receiveBytes, 0, tmpTcpClient.ReceiveBufferSize);
+                    receiveMsg += Encoding.UTF8.GetString(receiveBytes, 0, numberOfBytesRead);
+                }
+                while (ns.DataAvailable);
+            }
+            return receiveMsg;
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -47,7 +78,6 @@ namespace Coco.Communication
             }
             if (disposing)
             {
-                communication.Dispose();
                 msgBytes = null;
             }
             //// 清理非托管资源
@@ -58,6 +88,7 @@ namespace Coco.Communication
             //}
             //让类型知道自己已经被释放
             disposed = true;
+            GC.Collect();
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using Coco.Communication.Base;
+﻿using Coco.Communication;
 using Coco.Hosting.Hosting;
 using Coco.Logger;
 using Coco.Models;
 using System;
 using System.Net.Sockets;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 
@@ -18,42 +19,52 @@ namespace Coco.Process
         public TcpClient Client { get; set; }
         public CocoHost Server { get; set; }
         public string TopicName { get; set; }
-        public CommunicationBase Communication { get; set; }
+        public MessageSender Sender { get; set; }
+        public MessageReceiver Receiver { get; set; }
         public Guid Id { get; set; }
-        public int ClientType { get; set; }
+        public ClientType ClientType { get; set; }
 
         public event Action<CocoProcesser> CommunicationStart;
         public event Action<Guid> CommunicateEnd;
 
         public Subject<ParseMessage> AfterParseMessage { get; set; } = new Subject<ParseMessage>();
 
-        public CocoProcesser(Guid id, TcpClient client, CocoHost server)
+        public CocoProcesser(TcpClient client, CocoHost server)
         {
             Client = client;
             Server = server;
-            Id = id;
-            Communication = new CommunicationBase();
+            Id = Guid.NewGuid();
 
             CommunicationStart += Server.AddSubscribeClient;
             CommunicateEnd += Server.RemoveSubscribeClient;
 
         }
 
+        public IObservable<Guid> AfterClosed()
+        {
+            return Observable.Return<Guid>(Id);
+        }
+
+        public void Com()
+        {
+            return;
+        }
+
         public void Communicate()
         {
             try
             {
-                string content = Communication.ReceiveMsg(Client);
+                string content = Receiver.ReceiveMessageAsync(Client);
 
                 var part = content.Split("^^^");
 
                 var method = part[0];
                 TopicName = part[1];
 
-                ClientType = Convert.ToInt32(method);
+                ClientType = Enum.Parse<ClientType>(method);
 
                 //生产者发布消息后立即断开
-                if (ClientType == 0)
+                if (ClientType == ClientType.Producer)
                 {
                     string msg = part[2];
                     if (!string.IsNullOrEmpty(msg))
@@ -66,7 +77,7 @@ namespace Coco.Process
                 }
 
                 //只有消费者会被维护链接
-                else if (ClientType == 1)
+                else if (ClientType == ClientType.Comsummer)
                 {
                     CommunicationStart.Invoke(this);
                     if (TrySendMessage(TopicName))
@@ -117,7 +128,7 @@ namespace Coco.Process
                 return;
             }
             //Communication.SendMsg(msg, Client);
-            Communication.Close();
+            //Communication.Close();
             CommunicateEnd?.Invoke(this.Id);
         }
 

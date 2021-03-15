@@ -8,7 +8,7 @@ namespace Coco.Models
 {
     public enum ClientType
     {
-        Send = 0,
-        Receive = 1
+        Producer = 0,
+        Comsummer = 1
     }
 }

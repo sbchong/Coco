@@ -54,10 +54,6 @@ namespace Coco.Logger
 
         private static async Task LogAsync(string value)
         {
-            if (!init)
-            {
-                Init();
-            }
             logs.Add(value);
             if (ok)
             {

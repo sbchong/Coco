@@ -1,7 +1,7 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
-using Coco.Communication.Base;
+using System.Threading.Tasks;
 using Coco.Enums;
 using Coco.Process;
 
@@ -11,32 +11,39 @@ namespace Coco.Communication
     {
         private bool disposed;
         private CocoProcesser cocoProcesser;
-        private CommunicationBase communication;
         private byte[] msgBytes;
 
         public MessageSender(CocoProcesser processer)
         {
             cocoProcesser = processer;
-            communication = new CommunicationBase();
         }
 
         public void Send(string message)
         {
             msgBytes = Encoding.UTF8.GetBytes(message);
-
-            communication.SendMsg(msgBytes, cocoProcesser.Client);
         }
 
-        public void Send(string message, EncodingType encoding)
+        public async Task SendAsync(string message, Encoding encoding)
         {
-            switch (encoding)
-            {
-                case EncodingType.UTF8:
-                    msgBytes = Encoding.UTF8.GetBytes(message);
-                    break;
-            }
+            msgBytes = encoding.GetBytes(message);
 
-            communication.SendMsg(msgBytes, cocoProcesser.Client);
+           await SendMessageAsync(msgBytes, cocoProcesser.Client);
+        }
+
+
+        /// <summary>
+        /// 发消息
+        /// </summary>
+        /// <param name="msg">消息</param>
+        /// <param name="tmpTcpClient">TcpClient</param>
+        public async Task SendMessageAsync(byte[] msgByte, TcpClient tmpTcpClient)
+        {
+            NetworkStream ns = tmpTcpClient.GetStream();
+            if (ns.CanWrite)
+            {
+                // byte[] msgByte = Encoding.UTF8.GetBytes(msg);
+                await ns.WriteAsync(msgByte, 0, msgByte.Length);
+            }
         }
 
         public void Dispose()
@@ -72,7 +79,6 @@ namespace Coco.Communication
             }
             if (disposing)
             {
-                communication.Dispose();
                 msgBytes = null;
             }
             //// 清理非托管资源
@@ -83,6 +89,7 @@ namespace Coco.Communication
             //}
             //让类型知道自己已经被释放
             disposed = true;
+            GC.Collect();
         }
     }
 

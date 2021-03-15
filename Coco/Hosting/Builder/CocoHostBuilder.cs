@@ -1,4 +1,5 @@
 ﻿using Coco.Hosting.Hosting;
+using Coco.Logger;
 using System;
 using System.IO;
 using System.Text;
@@ -52,6 +53,8 @@ namespace Coco.Hosting.Builder
                     }
                 }
             }
+
+            Log.Init();
 
             return this;
         }
