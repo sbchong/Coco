@@ -86,20 +86,19 @@ namespace Coco.Hosting.Hosting
                     if (tmpTcpClient.Connected)
                     {
                         Task.Run(() =>
-                                  {
-                                      Guid clientId = Guid.NewGuid();
-                                      CocoProcesser processer = new(tmpTcpClient, this);
-                                      processer.Com();
+                        {
+                            Guid clientId = Guid.NewGuid();
+                            CocoProcesser processer = new(tmpTcpClient, this);
 
-                                      //TODO: 使用RX
-                                      processer.AfterParseMessage.Subscribe();
+                            //TODO: 使用RX
+                            processer.AfterParseMessage.Subscribe();
 
-                                      processer.AfterClosed().Subscribe(x =>
-                                      {
-                                          Log.LogInformation(x.ToString());
-                                      });
+                            processer.AfterClosed.Subscribe(x =>
+                            {
+                                Log.LogInformation(x.ToString());
+                            });
 
-                                  });
+                        });
                     }
                 }
                 catch (Exception ex)

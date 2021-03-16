@@ -29,26 +29,22 @@ namespace Coco.Process
 
         public Subject<ParseMessage> AfterParseMessage { get; set; } = new Subject<ParseMessage>();
 
+        public Subject<Guid> AfterClosed { get; set; } = new Subject<Guid>();
+
         public CocoProcesser(TcpClient client, CocoHost server)
         {
             Client = client;
             Server = server;
             Id = Guid.NewGuid();
 
+            Sender = new MessageSender(this);
+            Receiver = new MessageReceiver(this);
+
             CommunicationStart += Server.AddSubscribeClient;
             CommunicateEnd += Server.RemoveSubscribeClient;
 
         }
 
-        public IObservable<Guid> AfterClosed()
-        {
-            return Observable.Return<Guid>(Id);
-        }
-
-        public void Com()
-        {
-            return;
-        }
 
         public void Communicate()
         {
@@ -72,7 +68,7 @@ namespace Coco.Process
                         Server.Push(TopicName, msg);
                     }
                     SendCompeleted();
-                    this.Client.Close();
+
                     CommunicateEnd?.Invoke(this.Id);
                 }
 
@@ -170,6 +166,7 @@ namespace Coco.Process
                 // 清理托管资源
                 if (Client != null)
                 {
+                    Client.Close();
                     Client.Dispose();
                     Client = null;
                 }
