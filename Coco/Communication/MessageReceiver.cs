@@ -26,18 +26,18 @@ namespace Coco.Communication
         /// </summary>
         /// <param name="tmpTcpClient">TcpClient</param>
         /// <returns>消息</returns>
-        public string ReceiveMessageAsync(TcpClient tmpTcpClient)
+        public async Task<string> ReceiveMessageAsync()
         {
             string receiveMsg = string.Empty;
-            byte[] receiveBytes = new byte[tmpTcpClient.ReceiveBufferSize];
+            byte[] receiveBytes = new byte[cocoProcesser.Client.ReceiveBufferSize];
             int numberOfBytesRead = 0;
-            NetworkStream ns = tmpTcpClient.GetStream();
+            NetworkStream ns = cocoProcesser.Client.GetStream();
 
             if (ns.CanRead)
             {
                 do
                 {
-                    numberOfBytesRead = ns.Read(receiveBytes, 0, tmpTcpClient.ReceiveBufferSize);
+                    numberOfBytesRead = await ns.ReadAsync(receiveBytes, 0, cocoProcesser.Client.ReceiveBufferSize);
                     receiveMsg += Encoding.UTF8.GetString(receiveBytes, 0, numberOfBytesRead);
                 }
                 while (ns.DataAvailable);

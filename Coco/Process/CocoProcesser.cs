@@ -8,6 +8,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Coco.Process
 {
@@ -35,7 +36,6 @@ namespace Coco.Process
         {
             Client = client;
             Server = server;
-            Id = Guid.NewGuid();
 
             Sender = new MessageSender(this);
             Receiver = new MessageReceiver(this);
@@ -43,6 +43,14 @@ namespace Coco.Process
             CommunicationStart += Server.AddSubscribeClient;
             CommunicateEnd += Server.RemoveSubscribeClient;
 
+        }
+
+        public async Task Run()
+        {
+            MessageReceiver receiver = new(this);
+            string temp = await receiver.ReceiveMessageAsync();
+            CocoMessageParser cocoMessageParser = new();
+            cocoMessageParser.Parse();
         }
 
 
