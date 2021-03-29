@@ -11,17 +11,22 @@ namespace Coco.Process
     public class CocoMessageParser
     {
         public string MessageOrigalText { get; set; }
-        public Subject<ParseMessage> ParseMessage { get; set; }
-        public CocoMessageParser CreateMessageParser(string text)
+        public Subject<ParseMessage> ParsedMessage { get; set; }
+        public CocoMessageParser()
+        {
+            ParsedMessage = new Subject<ParseMessage>();
+        }
+        public void Parser(string text)
         {
             MessageOrigalText = text;
-            ParseMessage = new Subject<ParseMessage>();
-            return this;
+            // 解析
+
+            ParsedMessage.OnNext(new ParseMessage());
         }
 
         public IObservable<ParseMessage> AfaterParsed()
         {
-            return ParseMessage;
+            return ParsedMessage;
         }
     }
 }

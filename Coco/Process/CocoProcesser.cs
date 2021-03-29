@@ -40,7 +40,7 @@ namespace Coco.Process
             Sender = new MessageSender(this);
             Receiver = new MessageReceiver(this);
 
-           // CommunicationStart += Server.AddSubscribeClient;
+            // CommunicationStart += Server.AddSubscribeClient;
             //CommunicateEnd += Server.RemoveSubscribeClient;
 
         }
@@ -52,7 +52,10 @@ namespace Coco.Process
             CocoMessageParser cocoMessageParser = new();
             //cocoMessageParser.Parse();
 
-            cocoMessageParser.AfaterParsed().Subscribe();
+            cocoMessageParser.AfaterParsed().Subscribe(result =>
+            {
+                Server.Push(result.TopicName, result.Message);
+            });
         }
 
 
