@@ -53,9 +53,18 @@ namespace Coco.Process
             //cocoMessageParser.Parse();
 
             cocoMessageParser.AfaterParsed().Subscribe(result =>
-            {
-                Server.Push(result.TopicName, result.Message);
-            });
+             {
+                 switch (result.Type)
+                 {
+                     case ClientType.Comsummer: 
+                         
+                         break;
+                     case ClientType.Producer: break;
+                     default: return;
+                 }
+
+                 Server.Push(result.TopicName, result.Message);
+             });
         }
 
 
